@@ -14,6 +14,15 @@
   .clicked-coord-label p {
     margin: 10px;
   }
+  .info-window-button {
+    @apply bg-red-500 text-white p-1 mt-2 hover:bg-red-700 text-base;
+  }
+  .info-window-text {
+    @apply text-base;
+  }
+  .info-window-header {
+    @apply text-xl;
+  }
 }
 @tailwind components;
 @tailwind utilities;
