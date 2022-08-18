@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CSVLink } from 'react-csv'
+import proj4 from 'proj4'
 import MapWrapper from '../components/MapWrapper'
 import { trashbin } from '../components/SVGComponents'
 
@@ -25,6 +26,26 @@ export default function Home() {
     }
     return csvMarkersCoordinates
   }
+  useEffect(() => {
+    async function transformCoordinates() {
+      const response = await fetch('BETA2007.gsb')
+      if (!response.ok) {
+        throw new Error('Somethings wrong')
+      }
+      const buffer = await response.arrayBuffer()
+      proj4.nadgrid('BETA2007.gsb', buffer)
+      proj4.defs([
+        [
+          'EPSG:31467',
+          '+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +nadgrids=@BETA2007.gsb +units=m +no_defs +type=crs',
+        ],
+        ['EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs +type=crs'],
+      ])
+      return proj4('EPSG:4326', 'EPSG:31467', { x: 8.589935, y: 49.905249 })
+    }
+    console.log(transformCoordinates())
+  }, [])
+
   return (
     <div className="grid grid-cols-3 items-center justify-center w-full h-screen bg-slate-100">
       <div className="col-span-2 w-full h-full">

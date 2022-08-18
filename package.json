@@ -14,9 +14,12 @@
     "@types/google.maps": "^3.49.2",
     "fast-equals": "^4.0.1",
     "next": "12.2.5",
+    "path-browserify": "^1.0.1",
+    "proj4": "^2.8.0",
     "react": "18.2.0",
     "react-csv": "^2.2.2",
     "react-dom": "18.2.0",
+    "transform-coordinates": "^1.0.0",
     "uniqid": "^5.4.0"
   },
   "devDependencies": {
