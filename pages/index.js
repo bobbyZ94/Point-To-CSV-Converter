@@ -7,34 +7,38 @@ import MapWrapper from '../components/MapWrapper'
 import { trashbin } from '../components/SVGComponents'
 
 export default function Home() {
-  const [chosenCoordinateSystem, setChosenCoordinateSystem] = useState()
-  console.log(chosenCoordinateSystem)
+  // selector state
+  const [chosenCoordinateSystem, setChosenCoordinateSystem] = useState('wsg84')
   // default coordinates are wsg84 by google maps in lat/lng epsg:4326
   const [markersCoordinates, setMarkersCoordinates] = useState([])
-  const [markersCoordinatesGauss, SetMarkersCoordinatesGauss] = useState([])
-
-  function generateCsv() {
-    let coordinatesArray = []
+  console.log(markersCoordinates)
+  const [markersCoordinatesGauss, setMarkersCoordinatesGauss] = useState([])
+  const [markersCoordinatesDefault, setMarkersCoordinatesDefault] = useState([])
+  useEffect(() => {
     switch (chosenCoordinateSystem) {
       case 'wsg84':
-        coordinatesArray = markersCoordinates
+        setMarkersCoordinatesDefault([...markersCoordinates])
         break
       case 'gauss':
-        coordinatesArray = markersCoordinatesGauss
+        // convert wsg84 array to gauss array, then set as default
+        setMarkersCoordinatesDefault([...markersCoordinatesGauss])
         break
       default:
-        coordinatesArray = markersCoordinates
+        setMarkersCoordinatesDefault([...markersCoordinates])
     }
+  }, [markersCoordinates, chosenCoordinateSystem])
 
+  // TODO: move to util folder
+  function generateCsv() {
     const csvMarkersCoordinates = [['Name', 'Latitude', 'Longitude', 'Elevation']]
-    for (let i = 0; i < coordinatesArray.length; i += 1) {
+    for (let i = 0; i < markersCoordinatesDefault.length; i += 1) {
       csvMarkersCoordinates.push([
         String(i + 1),
-        coordinatesArray[i].latLng
+        markersCoordinatesDefault[i].latLng
           .toString()
           .replace(/[\])}[{(]/g, '')
           .split(/[, ]+ /)[0],
-        coordinatesArray[i].latLng
+        markersCoordinatesDefault[i].latLng
           .toString()
           .replace(/[\])}[{(]/g, '')
           .split(/[, ]+ /)[1],
@@ -45,6 +49,8 @@ export default function Home() {
   }
 
   useEffect(() => {
+    // get wsg84 array, map through every point while using transform function on .latLng
+
     async function transformCoordinates(markersCoordinates) {
       const response = await fetch('BETA2007.gsb')
       if (!response.ok) {
@@ -59,11 +65,12 @@ export default function Home() {
         ],
         ['EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs +type=crs'],
       ])
-      return proj4('EPSG:4326', 'EPSG:31467', { x: 8.589935, y: 49.905249 })
     }
-    console.log(transformCoordinates())
-    console.log(markersCoordinatesGauss)
-  }, [])
+
+    if (chosenCoordinateSystem === 'gauss') {
+      transformCoordinates(markersCoordinates)
+    }
+  }, [markersCoordinates])
 
   return (
     <div className="grid grid-cols-3 items-center justify-center w-full h-screen bg-slate-100">
@@ -77,12 +84,11 @@ export default function Home() {
               <th className="p-1">Punkt</th>
               <th className="p-1">Latitude/Breite</th>
               <th className="p-1">Longitude/Höhe</th>
-              <th className="p-1">Id</th>
               <th className="p-1">Löschen</th>
             </tr>
           </thead>
           <tbody>
-            {markersCoordinates.map((coordinates, index) => (
+            {markersCoordinatesDefault.map((coordinates, index) => (
               <tr key={index}>
                 <td className="bg-slate-200 p-1">{String(index + 1)}</td>
                 <td className="bg-slate-200 p-1">
@@ -99,7 +105,6 @@ export default function Home() {
                       .replace(/[\])}[{(]/g, '')
                       .split(/[, ]+ /)[1]}
                 </td>
-                <td className="bg-slate-200 p-1">{coordinates.id}</td>
                 <td className="bg-slate-200 p-1">
                   <div
                     className="hover:scale-110 hover:cursor-pointer flex justify-center"
@@ -137,3 +142,9 @@ export default function Home() {
     </div>
   )
 }
+
+setMarkersCoordinatesGauss(
+  markersCoordinates.map((elem) => {
+   ...elem, proj4('EPSG:4326', 'EPSG:31467', { x: coordinates.latLng.lat, y: coordinates.latLng.lng })
+  })
+)
