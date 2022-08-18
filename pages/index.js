@@ -7,17 +7,34 @@ import MapWrapper from '../components/MapWrapper'
 import { trashbin } from '../components/SVGComponents'
 
 export default function Home() {
+  const [chosenCoordinateSystem, setChosenCoordinateSystem] = useState()
+  console.log(chosenCoordinateSystem)
+  // default coordinates are wsg84 by google maps in lat/lng epsg:4326
   const [markersCoordinates, setMarkersCoordinates] = useState([])
+  const [markersCoordinatesGauss, SetMarkersCoordinatesGauss] = useState([])
+
   function generateCsv() {
+    let coordinatesArray = []
+    switch (chosenCoordinateSystem) {
+      case 'wsg84':
+        coordinatesArray = markersCoordinates
+        break
+      case 'gauss':
+        coordinatesArray = markersCoordinatesGauss
+        break
+      default:
+        coordinatesArray = markersCoordinates
+    }
+
     const csvMarkersCoordinates = [['Name', 'Latitude', 'Longitude', 'Elevation']]
-    for (let i = 0; i < markersCoordinates.length; i += 1) {
+    for (let i = 0; i < coordinatesArray.length; i += 1) {
       csvMarkersCoordinates.push([
         String(i + 1),
-        markersCoordinates[i].latLng
+        coordinatesArray[i].latLng
           .toString()
           .replace(/[\])}[{(]/g, '')
           .split(/[, ]+ /)[0],
-        markersCoordinates[i].latLng
+        coordinatesArray[i].latLng
           .toString()
           .replace(/[\])}[{(]/g, '')
           .split(/[, ]+ /)[1],
@@ -26,8 +43,9 @@ export default function Home() {
     }
     return csvMarkersCoordinates
   }
+
   useEffect(() => {
-    async function transformCoordinates() {
+    async function transformCoordinates(markersCoordinates) {
       const response = await fetch('BETA2007.gsb')
       if (!response.ok) {
         throw new Error('Somethings wrong')
@@ -44,6 +62,7 @@ export default function Home() {
       return proj4('EPSG:4326', 'EPSG:31467', { x: 8.589935, y: 49.905249 })
     }
     console.log(transformCoordinates())
+    console.log(markersCoordinatesGauss)
   }, [])
 
   return (
@@ -98,7 +117,18 @@ export default function Home() {
             ))}
           </tbody>
         </table>
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center justify-center bg-slate-300 gap-5 p-5">
+          <div>Wähle das gewünschte Coordinatensystem:</div>
+          <select
+            className="p-1"
+            name="coordinates"
+            id="coordinates-select"
+            value={chosenCoordinateSystem}
+            onChange={(e) => setChosenCoordinateSystem(e.target.value)}
+          >
+            <option value="wsg84">WSG84 - Google Maps - EPSG: 4326</option>
+            <option value="gauss">DHDN/3-degree Gauss-Kruger Zone 3 - EPSG:31467</option>
+          </select>
           <button type="button" className="px-1 rounded border-2 border-slate-700 bg-slate-200 hover:scale-105">
             <CSVLink data={generateCsv()}>Download CSV Datei</CSVLink>
           </button>
