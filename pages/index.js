@@ -121,7 +121,7 @@ export default function Home() {
         <button type="button" className="px-1 text-base border-2 rounded border-slate-700 bg-slate-200 hover:scale-105">
           <CSVLink
             enclosingCharacter=""
-            data={generateCsv(transformedMarkersCoordinates)}
+            data={generateCsv(transformedMarkersCoordinates, chosenCoordinateSystem)}
             filename={`${chosenCoordinateSystem === 'gauss' ? 'gauss_koordinaten.csv' : 'wsg84_koordinaten.csv'}`}
           >
             Download CSV Datei
