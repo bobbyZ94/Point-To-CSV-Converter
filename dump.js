@@ -60,3 +60,27 @@ function Marker2({ position, map, id }) {
   // })
   return null
 }
+
+
+useEffect(() => {
+  switch (chosenCoordinateSystem) {
+    case 'wsg84':
+      setMarkersCoordinatesDefault([...markersCoordinates])
+      break
+    case 'gauss':
+      // convert wsg84 array to gauss array, then set as default
+      setMarkersCoordinatesDefault([...markersCoordinatesGauss])
+      break
+    default:
+      setMarkersCoordinatesDefault([...markersCoordinates])
+  }
+}, [markersCoordinates, chosenCoordinateSystem])
+
+coordinates.latLng &&
+                    coordinates.latLng
+                      .toString()
+                      .replace(/[\])}[{(]/g, '')
+                      .split(/[, ]+ /)[0]}
+
+
+                      { x: elem.latLng.lng(), y: elem.latLng.lat() }

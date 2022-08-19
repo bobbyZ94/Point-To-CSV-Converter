@@ -14,9 +14,10 @@ function MapWrapper({ markersCoordinates, setMarkersCoordinates }) {
         onClick={(event) => {
           setMarkersCoordinates([...markersCoordinates, { latLng: event.latLng, id: uniqid() }])
         }}
-        mapContainerClassName="w-full h-full"
+        mapContainerClassName="h-full w-full"
         center={center}
         zoom={10}
+        options={{ streetViewControl: false }}
       >
         {markersCoordinates?.map((coordinates, index) => (
           <MarkerF
