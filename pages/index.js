@@ -65,7 +65,6 @@ export default function Home() {
     }
     transformCoordinates(chosenCoordinateSystem)
   }, [markersCoordinates, chosenCoordinateSystem])
-  console.log('Transformed', transformedMarkersCoordinates)
 
   return (
     <div className="items-center justify-center w-full h-screen xl:grid xl:grid-cols-2 2xl:grid-cols-3 bg-slate-100">
@@ -121,6 +120,7 @@ export default function Home() {
         </table>
         <button type="button" className="px-1 text-base border-2 rounded border-slate-700 bg-slate-200 hover:scale-105">
           <CSVLink
+            enclosingCharacter=""
             data={generateCsv(transformedMarkersCoordinates)}
             filename={`${chosenCoordinateSystem === 'gauss' ? 'gauss_koordinaten.csv' : 'wsg84_koordinaten.csv'}`}
           >
