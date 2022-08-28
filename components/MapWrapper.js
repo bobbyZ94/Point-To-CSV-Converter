@@ -12,7 +12,10 @@ function MapWrapper({ markersCoordinates, setMarkersCoordinates }) {
     <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY}>
       <GoogleMap
         onClick={(event) => {
-          setMarkersCoordinates([...markersCoordinates, { latLng: event.latLng, id: uniqid() }])
+          setMarkersCoordinates([
+            ...markersCoordinates,
+            { name: String(markersCoordinates.length + 1), latLng: event.latLng, id: uniqid() },
+          ])
         }}
         mapContainerClassName="h-full w-full"
         center={center}

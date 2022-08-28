@@ -9,7 +9,7 @@ export default function generateCsv(transformedMarkersCoordinates, chosenCoordin
   ]
   for (let i = 0; i < transformedMarkersCoordinates.length; i += 1) {
     csvMarkersCoordinates.push([
-      String(i + 1),
+      transformedMarkersCoordinates[i].name,
       transformedMarkersCoordinates[i].latLng.x.toString(),
       transformedMarkersCoordinates[i].latLng.y.toString(),
       String(0),

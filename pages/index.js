@@ -12,6 +12,9 @@ export default function Home() {
   // help modal state
   const [modalVisible, setModalVisible] = useState(true)
 
+  // .csv filename state
+  const [fileName, setFileName] = useState(new Date().toLocaleDateString('de-DE').replaceAll('.', '_'))
+
   // selector state
   const [chosenCoordinateSystem, setChosenCoordinateSystem] = useState('wsg84')
 
@@ -51,6 +54,7 @@ export default function Home() {
             setTransformedMarkersCoordinates(() =>
               markersCoordinates.map((elem) => ({
                 id: elem.id,
+                name: elem.name,
                 latLng: proj4('EPSG:4326', 'EPSG:31467', { y: elem.latLng.lat(), x: elem.latLng.lng() }),
               }))
             )
@@ -61,6 +65,7 @@ export default function Home() {
           setTransformedMarkersCoordinates(() =>
             markersCoordinates.map((elem) => ({
               id: elem.id,
+              name: elem.name,
               latLng: { x: elem.latLng.lat(), y: elem.latLng.lng() },
             }))
           )
@@ -111,7 +116,20 @@ export default function Home() {
             <tbody>
               {transformedMarkersCoordinates.map((coordinates, index) => (
                 <tr key={index}>
-                  <td className="p-1 bg-slate-200">{String(index + 1)}</td>
+                  <td className="p-1 bg-slate-200">
+                    <input
+                      className="w-8 text-center md:w-24"
+                      type="text"
+                      onChange={(e) =>
+                        setMarkersCoordinates(() =>
+                          markersCoordinates.map((elem, index2) =>
+                            index === index2 ? { ...elem, name: e.target.value } : elem
+                          )
+                        )
+                      }
+                      value={coordinates.name}
+                    />
+                  </td>
                   <td className="p-1 bg-slate-200">{coordinates.latLng.x}</td>
                   <td className="p-1 bg-slate-200">{coordinates.latLng.y}</td>
                   <td className="p-1 bg-slate-200">
@@ -131,6 +149,10 @@ export default function Home() {
               ))}
             </tbody>
           </table>
+          <label>
+            CSV-Datei Name:
+            <input className="block p-1" type="text" value={fileName} onChange={(e) => setFileName(e.target.value)} />
+          </label>
           <button
             type="button"
             className="px-1 text-sm border-2 rounded md:text-base border-slate-700 bg-slate-200 hover:scale-105"
@@ -138,7 +160,11 @@ export default function Home() {
             <CSVLink
               enclosingCharacter=""
               data={generateCsv(transformedMarkersCoordinates, chosenCoordinateSystem)}
-              filename={`${chosenCoordinateSystem === 'gauss' ? 'gauss_koordinaten.csv' : 'wsg84_koordinaten.csv'}`}
+              filename={`${
+                chosenCoordinateSystem === 'gauss'
+                  ? `${fileName}_gauss_koordinaten.csv`
+                  : `${fileName}_wsg84_koordinaten.csv`
+              }`}
             >
               Download CSV Datei
             </CSVLink>
