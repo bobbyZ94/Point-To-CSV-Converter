@@ -77,7 +77,7 @@ export default function Home() {
         <div className="w-full h-full 2xl:col-span-2">
           <MapWrapper markersCoordinates={markersCoordinates} setMarkersCoordinates={setMarkersCoordinates} />
         </div>
-        <div className="flex flex-col items-center justify-center gap-10 px-2 py-10 mx-auto text-xs rounded shadow sm:p-5 sm:text-base bg-slate-300">
+        <div className="flex flex-col items-center justify-center gap-10 px-2 py-10 mx-auto text-xs rounded shadow sm:p-5 md:text-base bg-slate-300">
           <button
             onClick={() => setModalVisible(!modalVisible)}
             type="button"
@@ -133,7 +133,7 @@ export default function Home() {
           </table>
           <button
             type="button"
-            className="px-1 text-base border-2 rounded border-slate-700 bg-slate-200 hover:scale-105"
+            className="px-1 text-sm border-2 rounded md:text-base border-slate-700 bg-slate-200 hover:scale-105"
           >
             <CSVLink
               enclosingCharacter=""
